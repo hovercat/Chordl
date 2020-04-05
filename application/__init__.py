@@ -33,9 +33,9 @@ def create_app():
     #celery.conf.update(app.config)
 
     with app.app_context():
-        from application.index import index_routes
-        from application.loggedin import loggedin_routes
-        from application.usermanagement import usermanagement_routes
+        from .index import index_routes
+        from .loggedin import loggedin_routes
+        from .usermanagement import usermanagement_routes
 
         app.register_blueprint(index_routes.index_blueprint)
         #app.register_blueprint(loggedin_routes.loggedin_blueprint)
