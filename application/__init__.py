@@ -4,7 +4,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session  # TODO No conda install of flask-session, used pip3!
 from flask_wtf.csrf import CSRFProtect
-
+from .config import *
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -18,11 +18,11 @@ csrf = CSRFProtect()
 def create_app():
     """Construct the core of webserver"""
     app = Flask(__name__)
-    app.config.from_object('config.Config')
+    app.config.from_object(Config())
 
     # Init plugins
     db.init_app(app)
-    login_manager.init_app(app)
+    #login_manager.init_app(app)
     sess.init_app(app)
     assets.init_app(app)
     csrf.init_app(app)
