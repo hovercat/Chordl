@@ -1,0 +1,8 @@
+flask-assets
+flask-login
+flask-sqlalchemy
+flask-wtf
+werkzeug
+flask-session
+pymysql
+Flask
