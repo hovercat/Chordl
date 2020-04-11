@@ -1,7 +1,46 @@
 {% extends 'skeleton.jinja2' %}
 
 {% block content %}
-<p>
-    This is the upload section
-</p>
+<div id="header">Welcome to the synchronisierungstool</div>
+<div id="song-select">
+        <div class="mdl-list__item">
+                <span class="mdl-list__item-primary-content">
+                  <i class="material-icons mdl-list__item">play_arrow</i>
+                  <span>Bryan Cranston</span>
+                </span>
+                <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">check</i></a>
+              </div>
+              <div class="mdl-list__item">
+                <span class="mdl-list__item-primary-content">
+                  <i class="material-icons mdl-list__item">play_arrow</i>
+                  <span>Aaron Paul</span>
+                </span>
+                <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">check</i></a>
+              </div>
+              <div class="mdl-list__item">
+                <span class="mdl-list__item-primary-content">
+                  <i class="material-icons mdl-list__item">play_arrow</i>
+                  <span>Bob Odenkirk</span>
+                </span>
+                <span class="mdl-list__item-secondary-content">
+                  <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">check</i></a>
+              </span>
+              </div>
+</div>
+<div id="controls">
+    <button id="recordButton">Aufnehmen</button>
+    <button id="syncedRecordButton" disabled>Aufnehmen mit Playback</button>
+    <button id="pauseButton" disabled>Pause</button>
+    <button id="stopButton" disabled>Stop</button>
+</div>
+<h3>Synchronisierungsaufnahme</h3>
+<audio preload="auto" controls id="sync_audio">
+    <source src="static/sample_sync_21guns.ogg" type="audio/ogg">
+    Bei dir funktioniert dass leider nicht. Firefox herunterladen?
+</audio>
+<h3>Recordings</h3>
+<ol id="recordingsList"></ol>
+<!-- inserting these scripts at the end to be able to use all the elements in the DOM -->
+<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+<script src="/static/app.js"></script>
 {% endblock %}
