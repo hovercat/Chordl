@@ -128,7 +128,7 @@ function startSyncedRecording() {
             mozAutoGainControl: false
           },
         video: false
-    }
+    };
 
     synced_record_button.disabled = true;
     record_button.disabled = true;
@@ -144,7 +144,7 @@ function startSyncedRecording() {
         microPhone = audio_context.createMediaStreamSource(stream);
         rec = new Recorder(microPhone, {
             numChannels: 2 //Sweet stereo
-        })
+        });
         rec.record();
         sync_audio.play();
         console.log("Now recording");
