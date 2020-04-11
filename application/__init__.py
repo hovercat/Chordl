@@ -34,10 +34,11 @@ def create_app():
 
     with app.app_context():
         from .index import index_routes
-        from .loggedin import loggedin_routes
-        from .usermanagement import usermanagement_routes
+        from .singer import singer_routes
+        from .admin import admin_routes
 
         app.register_blueprint(index_routes.index_blueprint)
+        app.register_blueprint(singer_routes.record_blueprint)
         #app.register_blueprint(loggedin_routes.loggedin_blueprint)
         #app.register_blueprint(usermanagement_routes.usermanagement_blueprint))
 
