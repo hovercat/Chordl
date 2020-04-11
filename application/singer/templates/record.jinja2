@@ -4,23 +4,33 @@
 <div id="header">Welcome to the synchronisierungstool</div>
 <div id="song-select">
         <div class="mdl-list__item">
-                <span class="mdl-list__item-primary-content">
-                  <i class="material-icons mdl-list__item">play_arrow</i>
+                <span class="mdl-list__item-primary-content"><!-- das sind meine parents !-->
+                  <i class="material-icons mdl-list__item">arrow_drop_down</i>
                   <span>21 Guns</span>
+                    <span class="mdl-list__item-text-body">
+                        Noch keine Aufnahme vorhanden
+                    </span>
+                    <!-- hier soll es dann noch jeweils ein child geben dass eingeblendet wird !-->
                 </span>
-                <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">check</i></a>
+                <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
               </div>
               <div class="mdl-list__item">
                 <span class="mdl-list__item-primary-content">
-                  <i class="material-icons mdl-list__item">play_arrow</i>
+                  <i class="material-icons mdl-list__item">arrow_drop_down</i>
                   <span>2x</span>
+                    <span class="mdl-list__item-text-body">
+                        Noch keine Aufnahme vorhanden
+                    </span>
                 </span>
-                <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">check</i></a>
+                <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
               </div>
               <div class="mdl-list__item">
                 <span class="mdl-list__item-primary-content">
-                  <i class="material-icons mdl-list__item">play_arrow</i>
+                  <i class="material-icons mdl-list__item">arrow_drop_down</i>
                   <span>Happy Together</span>
+                    <span class="mdl-list__item-text-body">
+                        Noch keine Aufnahme vorhanden
+                    </span>
                 </span>
                 <span class="mdl-list__item-secondary-content">
                   <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">check</i></a>
@@ -37,8 +47,6 @@
     <source src="static/sample_sync_21guns.ogg" type="audio/ogg">
     Bei dir funktioniert dass leider nicht. Firefox herunterladen?
 </audio>
-<h3>Recordings</h3>
-<ol id="recordingsList"></ol>
 <!-- inserting these scripts at the end to be able to use all the elements in the DOM -->
 <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
 <script src="/static/app.js"></script>
