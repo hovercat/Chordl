@@ -11,5 +11,5 @@ index_blueprint = Blueprint(
 
 @index_blueprint.route('/')
 def welcome_page():
-    return render_template('welcome.jinja2', title="Chorupload stuffz")
+    return render_template('welcome.jinja2', title="Willkommen im Chorupload Tool")
 
