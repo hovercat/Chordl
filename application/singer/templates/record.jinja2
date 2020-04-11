@@ -2,47 +2,58 @@
 
 {% block content %}
 <div id="header">Welcome to the synchronisierungstool</div>
-<div id="song-select">
-        <div class="mdl-list__item">
-                <span class="mdl-list__item-primary-content"><!-- das sind meine parents !-->
-                  <i class="material-icons mdl-list__item">arrow_drop_down</i>
+<ul id="song-select" class="demo-list-two mdl-list">
+        <li class="mdl-list__item mdl-list__item--two-line">
+            <span class="mdl-list__item-primary-content"><!-- das sind meine parents !-->
+                <i class="material-icons mdl-list__item-avatar">arrow_drop_down</i>
                   <span>21 Guns</span>
-                    <span class="mdl-list__item-text-body">
-                        Noch keine Aufnahme vorhanden
+                    <span class="mdl-list__item-sub-title">
+                        Noch keine Aufnahme
                     </span>
-                    <!-- hier soll es dann noch jeweils ein child geben dass eingeblendet wird !-->
+                    <div class="record-controls" style="display: none">
+                        <button id="recordButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Aufnehmen</button>
+                        <button id="syncedRecordButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">Aufnehmen mit Playback</button>
+                        <button id="pauseButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Pause</button>
+                        <button id="stopButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Stop</button>
+                    </div>
                 </span>
                 <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
-              </div>
-              <div class="mdl-list__item">
-                <span class="mdl-list__item-primary-content">
-                  <i class="material-icons mdl-list__item">arrow_drop_down</i>
+        </li>
+        <li class="mdl-list__item mdl-list__item--two-line">
+            <span class="mdl-list__item-primary-content">
+                  <i class="material-icons mdl-list__item-avatar">arrow_drop_down</i>
                   <span>2x</span>
-                    <span class="mdl-list__item-text-body">
-                        Noch keine Aufnahme vorhanden
+                    <span class="mdl-list__item-sub-title">
+                        Noch keine Aufnahme
                     </span>
-                </span>
+                     <div class="record-controls" style="display: none">
+                         <button id="recordButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Aufnehmen</button>
+                        <button id="syncedRecordButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">Aufnehmen mit Playback</button>
+                        <button id="pauseButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Pause</button>
+                        <button id="stopButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Stop</button>
+                    </div>
+            </span>
                 <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
-              </div>
-              <div class="mdl-list__item">
+        </li>
+        <li class="mdl-list__item mdl-list__item--two-line">
                 <span class="mdl-list__item-primary-content">
-                  <i class="material-icons mdl-list__item">arrow_drop_down</i>
+                  <i class="material-icons mdl-list__item-avatar">arrow_drop_down</i>
                   <span>Happy Together</span>
-                    <span class="mdl-list__item-text-body">
-                        Noch keine Aufnahme vorhanden
+                    <span class="mdl-list__item-sub-title">
+                        Noch keine Aufnahme
                     </span>
+                     <div class="record-controls" style="display: none">
+                        <button id="recordButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Aufnehmen</button>
+                        <button id="syncedRecordButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">Aufnehmen mit Playback</button>
+                        <button id="pauseButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Pause</button>
+                        <button id="stopButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Stop</button>
+                    </div>
                 </span>
                 <span class="mdl-list__item-secondary-content">
-                  <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">check</i></a>
+                  <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
               </span>
-              </div>
-</div>
-<div id="controls">
-    <button id="recordButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Aufnehmen</button>
-    <button id="syncedRecordButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">Aufnehmen mit Playback</button>
-    <button id="pauseButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Pause</button>
-    <button id="stopButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Stop</button>
-</div>
+        </li>
+</ul>
 <audio preload="auto" id="sync_audio">
     <source src="static/sample_sync_21guns.ogg" type="audio/ogg">
     Bei dir funktioniert dass leider nicht. Firefox herunterladen?

@@ -23,6 +23,15 @@ synced_record_button.addEventListener("click", startSyncedRecording)
 stop_button.addEventListener("click", stopRecording);
 pause_button.addEventListener("click", pauseRecording);
 
+$(".mdl-list__item").click(function() {
+    $(this).find(".record-controls").toggle();
+    if ($(this).find(".record-controls").is(":visible")) {
+        $(this).height(120);
+    } else {
+        $(this).height(70);
+    }
+});
+
 function startRecording() {
     console.log("Trying to start recording");
 
