@@ -33,10 +33,9 @@ class User(UserMixin, db.Model):
                            default=datetime.datetime.now())
 
     recordings = db.relationship("RecordingFile", back_populates="user")
-
     choirs = db.relationship("User_Choir", back_populates="user")
-
     user_choirsections = db.relationship("User_ChoirSection", back_populates="user")
+    created_rehearsals = db.relationship("Rehearsal", back_populates="creator")
 
     def __init__(self, password, **kwargs):
         self.set_password(password)
@@ -47,6 +46,9 @@ class User(UserMixin, db.Model):
 
     def check_password(self, trial_password):
         return check_password_hash(self.password_hash, trial_password)
+
+    def get_id(self):
+        return self.uid
 
     __table_args__ = (
         {'extend_existing': True}
@@ -188,6 +190,9 @@ class Song(db.Model):
     musescore_files = db.relationship("MusescoreFile", back_populates="song")
 
     choir_sections = db.relationship("Song_ChoirSection", back_populates="song")
+    rehearsal_songs = db.relationship("Rehearsal_Song", back_populates="song")
+
+
 
     __table_args__ = (
         {'extend_existing': True}
@@ -238,7 +243,6 @@ class SynchronizationFile(File, db.Model):
         response.headers.set('Content-Type', 'audio/ogg')
         return response
 
-
     __table_args__ = (
         #db.ForeignKeyConstraint(["sid", "csid"], ["Song.sid", "ChoirSection.csid"]),
         {'extend_existing': True}
@@ -264,6 +268,11 @@ class SheetmusicFile(File, db.Model):
 
     song = db.relationship("Song", back_populates="sheetmusic_files")
     choir_section = db.relationship("ChoirSection", back_populates="sheetmusic_files")
+
+    def provide_as_download(self):
+        response = super().provide_as_download()
+        response.headers.set('Content-Type', 'application/pdf')
+        return response
 
     __table_args__ = (
         #db.ForeignKeyConstraint(["sid", "csid"], ["Song_ChoirSection.sid", "Song_ChoirSection.csid"]),
@@ -300,9 +309,12 @@ class Rehearsal(db.Model):
                     autoincrement=True)
     cid = db.Column(db.Integer,
                     db.ForeignKey(Choir.cid))
-    # uid = db.Column(db.Integer,
-    #                db.ForeignKey(User.uid))  # which user created the rehearsal
+    uid = db.Column(db.Integer,
+                    db.ForeignKey(User.uid))  # which user created the rehearsal
 
+    created_on = db.Column(db.DateTime,
+                           nullable=False,
+                           default=datetime.datetime.now())
     start_date = db.Column(db.DateTime,
                            nullable=False,
                            default=datetime.datetime.now())
@@ -311,6 +323,7 @@ class Rehearsal(db.Model):
 
     rehearsal_songs = db.relationship("Rehearsal_Song", back_populates="rehearsal")
     choir = db.relationship("Choir", back_populates="rehearsals")
+    creator = db.relationship("User", back_populates="created_rehearsals")
 
     __table_args__ = (
         {'extend_existing': True}
@@ -337,12 +350,6 @@ class Rehearsal_Song(db.Model):
     )
 
 
-Song.rehearsals = association_proxy("Rehearsal_Song", "rid")
-
-
-# Rehearsal.songs = association_proxy("Rehearsal_Song", "sid")
-
-
 class RecordingFile(db.Model, File):
     __tablename__ = "RecordingFile"
 
@@ -350,97 +357,25 @@ class RecordingFile(db.Model, File):
                        primary_key=True)
     rid = db.Column(db.Integer,
                     nullable=False)
-    sid = db.Column(db.Integer,
+    sid1 = db.Column(db.Integer,
                     nullable=False)
+
     csid = db.Column(db.Integer,
                      nullable=False)
+
+    sid2 = db.Column(db.Integer,
+                     nullable=False) # TODO THIS IS BÖSE!!!
 
     uid = db.Column(db.Integer,
                     db.ForeignKey(User.uid),
                     nullable=False)
 
-    song_choirsection = db.relationship("Song_ChoirSection", back_populates="recordings")
-    rehearsal_song = db.relationship("Rehearsal_Song", back_populates="recordings")
+    song_choirsection = db.relationship("Song_ChoirSection", back_populates="recordings")#, primaryjoin="and_(RecordingFile.rid==Rehearsal_Song.csid, RecordingFile.sid1==Song_ChoirSection.sid2")
+    rehearsal_song = db.relationship("Rehearsal_Song", back_populates="recordings")#, primaryjoin="and_(RecordingFile.csid==Rehearsal_Song.csid, RecordingFile.sid2==Rehearsal_Song.sid2")
     user = db.relationship("User", back_populates="recordings")
 
     __table_args__ = (
-        db.ForeignKeyConstraint(["rid", "sid"], ["Rehearsal_Song.rid", "Rehearsal_Song.sid"]),
-        db.ForeignKeyConstraint(["sid", "csid", ], ["Song_ChoirSection.sid", "Song_ChoirSection.csid"]),
+        db.ForeignKeyConstraint(["rid", "sid1"], ["Rehearsal_Song.rid", "Rehearsal_Song.sid"]),
+        db.ForeignKeyConstraint(["sid2", "csid", ], ["Song_ChoirSection.sid", "Song_ChoirSection.csid"]),
         {'extend_existing': True}
     )
-
-# class Song(db.Model):
-#     __tablename__ = "Song"
-#
-#     sid = db.Column(db.Integer,
-#                     primary_key=True)
-#     title = db.Column(db.String(50),
-#                       nullable=False)
-#
-#     cid = db.Column(db.Integer,
-#                     db.ForeignKey(Choir.cid))  # which choir the song belongs to
-#     uid = db.Column(db.Integer,
-#                     db.ForeignKey(User.uid))  # which user created the song
-
-# synchronization_files = db.relationship("Song_File",
-#                                back_populates="song",
-#                                primaryjoin="and_(Song.sid==Song_File.sid, "
-#                                            "Song_File.type=='SYNCHRONIZATION')")
-# # sheetmusic_files = db.relationship("Song_File",
-#                                back_populates="song",
-#                                primaryjoin="and_(Song.sid==Song_File.sid, "
-#                                            "Song_File.type=='SHEETMUSIC')")
-#  #musescore_files = db.relationship("Song_File",
-#                                back_populates="song",
-#                                primaryjoin="and_(Song.sid==Song_File.sid, "
-#                                            "Song_File.type=='MUSESCORE')")
-
-# class File(db.Model):
-#     __tablename__ = "File"
-#
-#     fid = db.Column(db.Integer,
-#                     primary_key=True)
-#     uid = db.Column(db.Integer,
-#                     db.ForeignKey(User.uid),
-#                     nullable=False)
-#     file_blob = db.Column(LONGBLOB)
-#
-# class Song_File(db.Model):
-#     __tablename__ = "Song_File"
-#
-#     sid = db.Column(db.Integer,
-#                     db.ForeignKey(Song.sid),
-#                     primary_key=True)
-#     fid = db.Column(db.Integer,
-#                     db.ForeignKey(File.fid),
-#                     primary_key=True)
-#
-#     csid = db.Column(db.Integer,
-#                      db.ForeignKey(ChoirSection.csid),
-#                      nullable=True)
-#     type = db.Column(db.String(50),
-#                      nullable=False)
-#
-#     comment = db.Column(db.String(512),
-#                         nullable=True)
-#
-#     song = db.relationship("Song")
-#     file = db.relationship("File")
-#
-#
-# class Rehearsal_Song(db.Model):
-#     __tablename__ = "Rehearsal_Song"
-#
-#     rid = db.Column(db.Integer,
-#                     db.ForeignKey(Rehearsal.rid),
-#                     primary_key=True)
-#     sid = db.Column(db.Integer,
-#                     db.ForeignKey(Song.sid),
-#                     primary_key=True)
-#
-#     rehearsal = db.relationship("Rehearsal", backref="songs")
-#     song = db.relationship("Song", backref="rehearsal")
-#
-#
-# Rehearsal.songs = association_proxy("Rehearsal_Song", "sid")
-# Song.rehearsal = association_proxy("Rehearsal_Song", "rid")

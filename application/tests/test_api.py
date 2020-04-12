@@ -8,8 +8,9 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from flask import current_app as app
+from redis import Redis
 
-from application import db, sess, assets, csrf
+from application import db
 from application.models import User, Choir, User_Choir, Rehearsal, Song, ChoirSection, User_ChoirSection, \
     SynchronizationFile, Song_ChoirSection, SheetmusicFile
 
@@ -149,9 +150,11 @@ class ApiTests(unittest.TestCase):
                     static_url_path='/static',
                     static_folder='../static'
                     )
+        #app.config['SESSION_REDIS'] = "redis://127.0.0.1:6379"
+        #app.config['SESSION_TYPE'] = "redis"
         app.config['TESTING'] = True
         app.config['DEBUG'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://bxc:temppw@127.0.0.1/chordl_test'
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://test:test@127.0.0.1/chordl_test'
         app.config['SECRET_KEY'] = 'dev'
 
         db = SQLAlchemy()
@@ -159,6 +162,7 @@ class ApiTests(unittest.TestCase):
         sess = Session()
         assets = Environment()
         csrf = CSRFProtect()
+        #redis = Redis()
 
         # Init plugins
         db.init_app(app)

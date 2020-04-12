@@ -1,5 +1,6 @@
 from os import environ
-#import redis
+import redis
+
 
 class Config:
     """Set Flask configuration vars from .env file."""
@@ -15,7 +16,8 @@ class Config:
 
     # Session
     SESSION_TYPE = environ.get('SESSION_TYPE')
-#    SESSION_REDIS = redis.from_url(environ.get("SESSION_REDIS"))
+    if SESSION_TYPE == 'redis':
+        SESSION_REDIS = redis.from_url(environ.get("SESSION_REDIS"))
 
     # Database
     SQLALCHEMY_DATABASE_URI = environ.get('SQLALCHEMY_DATABASE_URI')
