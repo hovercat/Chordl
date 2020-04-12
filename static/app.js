@@ -8,34 +8,52 @@ var AudioContext = window.AudioContext || window.webkitAudioContext; //I already
 //The above code abstract the audiocontext from the browser
 var audio_context;
 
-var record_button = document.getElementById("recordButton");
-var stop_button = document.getElementById("stopButton");
-var pause_button = document.getElementById("pauseButton");
-var synced_record_button = document.getElementById("syncedRecordButton");
-var recordings_list = document.getElementById("recordingsList");
-var sync_audio = document.getElementById("sync_audio")
+var record_button;
+var stop_button;
+var pause_button;
+var synced_record_button;
+var recordings_list;
+var sync_audio;
+var play_playback_button;
+var clicked_item;
 
-record_button.addEventListener("click", startRecording);
 
-synced_record_button.addEventListener("click", startSyncedRecording)
-stop_button.addEventListener("click", stopRecording);
-pause_button.addEventListener("click", pauseRecording);
 
-$(".mdl-list__item").click(function() {
+$('.record-controls').click(function(event){
+    event.stopPropagation();
+});
+
+$(".entry-container").click(function() {
+    clicked_item = this;
     var req = new XMLHttpRequest();
+    let id = $(this).data("id");
+    record_button = $(".recordButton[data-id='"+ id +"']");
+    synced_record_button = $(".syncedRecordButton[data-id='"+ id +"']");
+    stop_button = $(".stopButton[data-id='" + id + "']");
+    pause_button = $(".pauseButton[data-id='" + id + "']");
+    play_playback_button = $(".playbackPlayButton[data-id='"+ id+"']");
+    sync_audio = $(".sync_audio[data-id='"+id +"']");
+    recordings_list = $(".record-list[data-id='"+ id +"']");
+
+    record_button.click(startRecording);
+    synced_record_button.click(startSyncedRecording);
+    stop_button.click(stop);
+    play_playback_button.click(playSyncFile);
     req.open("GET", "/static/sample_sync_21guns.ogg", true);
     req.addEventListener("progress", function (e) {
         var complete = (e.loaded / e.total) * 100;
-        console.log(e.loaded);
         document.querySelector('.sync_progress').MaterialProgress.setProgress(complete);
     }, false);
     req.responseType = "blob";
     req.onreadystatechange = function () {
     if (req.readyState === 4 && req.status === 200) {
         $('.sync_progress').hide();
-        $('#syncedRecordButton').attr('disabled', false);
+        synced_record_button.attr('disabled', false);
+        synced_record_button.html("Aufnahme mit Playback");
+        play_playback_button.attr('disabled', false);
+        play_playback_button.html('Playback wiedergeben');
         var blob_URL =  URL.createObjectURL(req.response);
-        $("#sync_21_audio").attr("src", blob_URL);
+        sync_audio.attr("src", blob_URL);
     }
     };
     req.send();
@@ -48,11 +66,27 @@ $(".mdl-list__item").click(function() {
         $(this).height(70);
     }
     $(".record-controls").not($self).hide();
-    $(".mdl-list__item").not(this).height(70);
+    $(".entry-container").not(this).height(70);
 });
 
 function progress({loaded, total}) {
     console.log("loaded: " + loaded + "total: " + total);
+}
+
+function playSyncFile() {
+    if(sync_audio[0].paused) {
+        sync_audio[0].play();
+        synced_record_button.attr("disabled", true);
+        record_button.attr("disabled", true);
+        pause_button.attr("disabled", false);
+        pause_button.click(playSyncFile);
+        pause_button.html('pause');
+        stop_button.attr("disabled", false);
+        play_playback_button.attr("disabled", true);
+    } else {
+        sync_audio[0].pause();
+        pause_button.html('pause_circle_filled');
+    }
 }
 
 function startRecording() {
@@ -70,9 +104,12 @@ function startRecording() {
         video: false
     };
 
-    record_button.disabled = true;
-    stop_button.disabled = false;
-    pause_button.disabled = false; //Pressing record activates pause & stop
+    record_button.attr("disabled", true);
+    synced_record_button.attr("disabled", true);
+    stop_button.attr("disabled", false);
+    play_playback_button.attr("disabled", true);
+    pause_button.attr("disabled", false); //Pressing record activates pause & stop
+    pause_button.click(pauseRecording);
 
     //.then is JS's weird version of a try/catch block
     navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
@@ -82,15 +119,15 @@ function startRecording() {
         audio_context = new AudioContext();
         microPhone = audio_context.createMediaStreamSource(stream);
         rec = new Recorder(microPhone, {
-            numChannels: 1 //Sweet stereo
-        })
+            numChannels: 2 //Sweet stereo
+        });
         rec.record();
         console.log("Now recording");
     }).catch(function(err) {
-        console.log("Failed to get microphone input, user may try again")
-        record_button.disabled = false;
-        stop_button.disabled = true;
-        pause_button.disabled = true;
+        console.log("Failed to get microphone input, user may try again");
+        record_button.attr("disabled", false);
+        stop_button.attr("disabled", true);
+        pause_button.attr("disabled", true);
     });
 }
 
@@ -98,38 +135,43 @@ function pauseRecording() {
     console.log("pauseButton clicked rec.recording=", rec.recording);
     if(rec.recording) {
         if(synced_recording) {
-            sync_audio.pause();
+            sync_audio[0].pause();
         }
         rec.stop();
-        pause_button.innerHTML = "Resume";
+        pause_button.html("pause_circle_filled");
     } else {
         if(synced_recording) {
-            sync_audio.play();
+            sync_audio[0].play();
         }
         rec.record();
-        pause_button.innerHTML = "Pause";
+        pause_button.html("pause");
     }
 }
 
-function stopRecording() {
+function stop() {
     if(synced_recording) {
-        sync_audio.pause();
-        sync_audio.currentTime = 0; //Zurückspulen
         synced_recording = false;
-        synced_record_button.disabled = false;
     }
+    sync_audio[0].pause();
+    sync_audio[0].currentTime = 0; //Zurückspulen
+    play_playback_button.attr("disabled", false);
     console.log("stopButton clicked");
-    //disable the stop button, enable the record too allow for new recordings
-    stop_button.disabled = true;
-    record_button.disabled = false;
-    pause_button.disabled = true;
+    //disable the stop and pause, enabled both recording buttons
+    stop_button.attr("disabled", true);
+    record_button.attr("disabled", false);
+    pause_button.attr("disabled", true);
+    synced_record_button.attr("disabled", false);
     //reset button just in case the recording is stopped while paused
-    pause_button.innerHTML = "Pause";
-    //tell the recorder to stop the recording
-    rec.stop(); //stop microphone access
-    soundStream.getAudioTracks()[0].stop(); //?
-    //create the wav blob and pass it on to createDownloadLink
-    rec.exportWAV(createDownloadLink);
+    pause_button[0].innerHTML = "pause";
+    pause_button.unbind("click");
+    if(rec.recording) {
+        //tell the recorder to stop the recording
+        rec.stop(); //stop microphone access
+        soundStream.getAudioTracks()[0].stop(); //?
+        //$(clicked_item).css("background-color", 'blue');
+        //create the wav blob and pass it on to createDownloadLink
+        rec.exportWAV(createDownloadLink);
+    }
 }
 
 function createDownloadLink(blob) {
@@ -142,9 +184,12 @@ function createDownloadLink(blob) {
     link_element.href = url;
     link_element.download = new Date().toISOString() + '.wav'; //Suggested filename for downloading
     link_element.innerHTML = "Download Recording: " + link_element.download;
-    list_element.appendChild(audio_element)
-    list_element.appendChild(link_element)
-    recordings_list.appendChild(list_element)
+    list_element.appendChild(audio_element);
+    $(list_element).addClass('mdl-list__item');
+    list_element.appendChild(link_element);
+    recordings_list.append(list_element);
+    //recordings_list.height(recordings_list.height() + 100);
+    $(clicked_item).innerHeight($(clicked_item).innerHeight() + 100);
 }
 
 function startSyncedRecording() {
@@ -162,10 +207,12 @@ function startSyncedRecording() {
         video: false
     };
 
-    synced_record_button.disabled = true;
-    record_button.disabled = true;
-    stop_button.disabled = false;
-    pause_button.disabled = false; //Pressing record activates pause & stop
+    record_button.attr("disabled", true);
+    synced_record_button.attr("disabled", true);
+    stop_button.attr("disabled", false);
+    play_playback_button.attr("disabled", true);
+    pause_button.attr("disabled", false); //Pressing record activates pause & stop
+    pause_button.click(pauseRecording);
 
     //.then is JS's weird version of a try/catch block
     navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
@@ -173,15 +220,16 @@ function startSyncedRecording() {
         console.log("Microphone Access was allowed, going on...");
         soundStream = stream;
         audio_context = new AudioContext();
+        sync_audio[0].currentTime = 0;
         microPhone = audio_context.createMediaStreamSource(stream);
         rec = new Recorder(microPhone, {
             numChannels: 2 //Sweet stereo
         });
         rec.record();
-        sync_audio.play();
+        sync_audio[0].play();
         console.log("Now recording");
     }).catch(function(err) {
-        console.log("Failed to get microphone input, user may try again")
+        console.log("Failed to get microphone input, user may try again");
         record_button.disabled = false;
         stop_button.disabled = true;
         pause_button.disabled = true;
