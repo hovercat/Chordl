@@ -1,5 +1,6 @@
 URL = window.URL || window.webkitURL; //Checks which URL object to use depending on browser
 var soundStream; //Stream from getUserMedia() aka microPhone
+var encoder = new OggVorbisEncoder(44100, 2, 0.45);
 var rec; //recorder.js library
 var microPhone;
 var synced_recording = false;
@@ -27,6 +28,7 @@ $(".entry-container").click(function() {
     clicked_item = this;
     var req = new XMLHttpRequest();
     let id = $(this).data("id");
+    let arrow = $(".show-song-arrow[data-id='"+ id + "']");
     record_button = $(".recordButton[data-id='"+ id +"']");
     synced_record_button = $(".syncedRecordButton[data-id='"+ id +"']");
     stop_button = $(".stopButton[data-id='" + id + "']");
@@ -62,7 +64,9 @@ $(".entry-container").click(function() {
     $self.toggle();
     if ($self.is(":visible")) {
         $(this).height(200);
+        arrow.html("arrow_drop_down");
     } else {
+        arrow.html("arrow_right");
         $(this).height(70);
     }
     $(".record-controls").not($self).hide();
@@ -122,6 +126,10 @@ function startRecording() {
             numChannels: 2 //Sweet stereo
         });
         rec.record();
+        rec.getBuffer(function (buffer) {
+            console.log(buffer);
+            encoder.encode(buffer);
+        });
         console.log("Now recording");
     }).catch(function(err) {
         console.log("Failed to get microphone input, user may try again");
@@ -175,18 +183,30 @@ function stop() {
 }
 
 function createDownloadLink(blob) {
-    var url = URL.createObjectURL(blob); //Pretty nice API, creates a "URL" for any in-memory blob
+    var wav_url = URL.createObjectURL(blob); //Pretty nice API, creates a "URL" for any in-memory blob
+    let ogg_url;
     var audio_element = document.createElement('audio');
     var list_element = document.createElement('li');
     var link_element = document.createElement('a');
+    var upload_element = document.createElement("a");
+    ogg_url = URL.createObjectURL(encoder.finish());
+    link_element.href = ogg_url;
     audio_element.controls = true; //See https://www.w3schools.com/tags/tag_audio.asp
-    audio_element.src = url;
-    link_element.href = url;
-    link_element.download = new Date().toISOString() + '.wav'; //Suggested filename for downloading
-    link_element.innerHTML = "Download Recording: " + link_element.download;
+    audio_element.src = wav_url;
+    link_element.download = new Date().toISOString() + '.ogg'; //Suggested filename for downloading
+    $(link_element).addClass("material-icons");
+    $(upload_element).addClass("material-icons");
+    link_element.innerHTML = "cloud_download";
+    upload_element.innerHTML = "cloud_done";
+    $(upload_element).click(function () {
+        if(window.confirm("Diese Aufnahme hochladen?")) {
+
+        }
+    });
     list_element.appendChild(audio_element);
     $(list_element).addClass('mdl-list__item');
     list_element.appendChild(link_element);
+    list_element.appendChild(upload_element);
     recordings_list.append(list_element);
     //recordings_list.height(recordings_list.height() + 100);
     $(clicked_item).innerHeight($(clicked_item).innerHeight() + 100);
