@@ -1,10 +1,10 @@
 {% extends 'skeleton.jinja2' %}
 
 {% block content %}
-<div id="header">Welcome to the synchronisierungstool</div>
+<h3>Musikstücke für Probe am {{ proben_datum }}</h3>
 <ul id="song-select" class="demo-list-two mdl-list">
         <li class="mdl-list__item mdl-list__item--two-line">
-            <span class="mdl-list__item-primary-content"><!-- das sind meine parents !-->
+            <span class="mdl-list__item-primary-content">
                 <i class="material-icons mdl-list__item-avatar">arrow_drop_down</i>
                   <span>21 Guns</span>
                     <span class="mdl-list__item-sub-title">
@@ -13,8 +13,13 @@
                     <div class="record-controls" style="display: none">
                         <button id="recordButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Aufnehmen</button>
                         <button id="syncedRecordButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">Aufnehmen mit Playback</button>
-                        <button id="pauseButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Pause</button>
-                        <button id="stopButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Stop</button>
+                        <button id="pauseButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored material-icons">pause</button>
+                        <button id="stopButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored material-icons">stop</button>
+                        <audio preload="auto" class="sync_audio"  id="sync_21_audio">
+                            <source type="audio/ogg" id="sync_21_src" >
+                            Bei dir funktioniert dass leider nicht. Firefox herunterladen?
+                        </audio>
+                        <div class="mdl-progress mdl-js-progress sync_progress"></div>
                     </div>
                 </span>
                 <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
@@ -32,6 +37,10 @@
                         <button id="pauseButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Pause</button>
                         <button id="stopButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Stop</button>
                     </div>
+                <audio preload="auto" class="sync_audio">
+                <source src="" type="audio/ogg">
+                Bei dir funktioniert dass leider nicht. Firefox herunterladen?
+                </audio>
             </span>
                 <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
         </li>
@@ -49,15 +58,15 @@
                         <button id="stopButton" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Stop</button>
                     </div>
                 </span>
+             <audio preload="auto" class="sync_audio">
+                <source src="" type="audio/ogg">
+                Bei dir funktioniert dass leider nicht. Firefox herunterladen?
+                </audio>
                 <span class="mdl-list__item-secondary-content">
                   <a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">close</i></a>
               </span>
         </li>
 </ul>
-<audio preload="auto" id="sync_audio">
-    <source src="static/sample_sync_21guns.ogg" type="audio/ogg">
-    Bei dir funktioniert dass leider nicht. Firefox herunterladen?
-</audio>
 <!-- inserting these scripts at the end to be able to use all the elements in the DOM -->
 <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
 <script src="/static/app.js"></script>

@@ -11,5 +11,5 @@ record_blueprint = Blueprint(
 
 @record_blueprint.route('/record')
 def welcome_page():
-    return render_template('record.jinja2', title="Aufnahme")
+    return render_template('record.jinja2', title="Aufnahme", proben_datum="01.04.2020")
 

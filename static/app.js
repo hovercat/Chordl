@@ -16,21 +16,44 @@ var recordings_list = document.getElementById("recordingsList");
 var sync_audio = document.getElementById("sync_audio")
 
 record_button.addEventListener("click", startRecording);
-sync_audio.addEventListener("canplaythrough", function() {
-    synced_record_button.disabled = false;
-});
+
 synced_record_button.addEventListener("click", startSyncedRecording)
 stop_button.addEventListener("click", stopRecording);
 pause_button.addEventListener("click", pauseRecording);
 
 $(".mdl-list__item").click(function() {
-    $(this).find(".record-controls").toggle();
-    if ($(this).find(".record-controls").is(":visible")) {
-        $(this).height(120);
+    var req = new XMLHttpRequest();
+    req.open("GET", "/static/sample_sync_21guns.ogg", true);
+    req.addEventListener("progress", function (e) {
+        var complete = (e.loaded / e.total) * 100;
+        console.log(e.loaded);
+        document.querySelector('.sync_progress').MaterialProgress.setProgress(complete);
+    }, false);
+    req.responseType = "blob";
+    req.onreadystatechange = function () {
+    if (req.readyState === 4 && req.status === 200) {
+        $('.sync_progress').hide();
+        $('#syncedRecordButton').attr('disabled', false);
+        var blob_URL =  URL.createObjectURL(req.response);
+        $("#sync_21_audio").attr("src", blob_URL);
+    }
+    };
+    req.send();
+
+    var $self = $(this).find(".record-controls");
+    $self.toggle();
+    if ($self.is(":visible")) {
+        $(this).height(200);
     } else {
         $(this).height(70);
     }
+    $(".record-controls").not($self).hide();
+    $(".mdl-list__item").not(this).height(70);
 });
+
+function progress({loaded, total}) {
+    console.log("loaded: " + loaded + "total: " + total);
+}
 
 function startRecording() {
     console.log("Trying to start recording");
