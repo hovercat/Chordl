@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session  # TODO No conda install of flask-session, used pip3!
 from flask_wtf.csrf import CSRFProtect
+
 from .config import *
 
 db = SQLAlchemy()
@@ -39,9 +40,11 @@ def create_app():
         from .index import index_routes
         from .singer import singer_routes
         from .admin import admin_routes
+        from .api import api_routes
 
         app.register_blueprint(index_routes.index_blueprint)
         app.register_blueprint(singer_routes.record_blueprint)
+        app.register_blueprint(api_routes.api_bp)
         #app.register_blueprint(loggedin_routes.loggedin_blueprint)
         #app.register_blueprint(usermanagement_routes.usermanagement_blueprint))
 
