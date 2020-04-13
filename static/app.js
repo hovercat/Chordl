@@ -1,6 +1,5 @@
 URL = window.URL || window.webkitURL; //Checks which URL object to use depending on browser
 var soundStream; //Stream from getUserMedia() aka microPhone
-var encoder = new OggVorbisEncoder(44100, 2, 0.45);
 var rec; //recorder.js library
 var microPhone;
 var synced_recording = false;
@@ -43,13 +42,12 @@ $(".entry-container").click(function() {
     play_playback_button.click(playSyncFile);
     req.open("GET", "/static/sample_sync_21guns.ogg", true);
     req.addEventListener("progress", function (e) {
-        var complete = (e.loaded / e.total) * 100;
-        document.querySelector('.sync_progress').MaterialProgress.setProgress(complete);
+        var complete = (e.loaded / e.total);
+        progress(complete);
     }, false);
     req.responseType = "blob";
     req.onreadystatechange = function () {
     if (req.readyState === 4 && req.status === 200) {
-        $('.sync_progress').hide();
         synced_record_button.attr('disabled', false);
         synced_record_button.html("Aufnahme mit Playback");
         play_playback_button.attr('disabled', false);
@@ -73,8 +71,12 @@ $(".entry-container").click(function() {
     $(".entry-container").not(this).height(70);
 });
 
-function progress({loaded, total}) {
-    console.log("loaded: " + loaded + "total: " + total);
+function progress(complete) {
+    $('.sync_progress').show();
+    document.querySelector('.sync_progress').MaterialProgress.setProgress(complete * 100);
+    if (complete == 1) {
+        $('.sync_progress').hide();
+    }
 }
 
 function playSyncFile() {
@@ -103,7 +105,7 @@ function startRecording() {
             latency: 0.02,
             echoCancellation: false,
             mozNoiseSuppression: false,
-            mozAutoGainControl: false
+            AutoGainControl: false,
           },
         video: false
     };
@@ -122,14 +124,23 @@ function startRecording() {
         soundStream = stream;
         audio_context = new AudioContext();
         microPhone = audio_context.createMediaStreamSource(stream);
-        rec = new Recorder(microPhone, {
-            numChannels: 2 //Sweet stereo
+        rec = new WebAudioRecorder(microPhone, {
+            numChannels: 2, //Sweet stereo
+            workerDir: "/static/",
+            encoding: "ogg",
+            options: {
+                timeLimit: 420,
+                encodeAfterRecord: true
+            }
         });
-        rec.record();
-        rec.getBuffer(function (buffer) {
-            console.log(buffer);
-            encoder.encode(buffer);
-        });
+        rec.onComplete = function(rec, blob) {
+            console.log("Encoding complete");
+            createDownloadLink(blob);
+        };
+        rec.onEncodingProgress = function (rec, complete) {
+          progress(complete);
+        };
+        rec.startRecording();
         console.log("Now recording");
     }).catch(function(err) {
         console.log("Failed to get microphone input, user may try again");
@@ -140,8 +151,8 @@ function startRecording() {
 }
 
 function pauseRecording() {
-    console.log("pauseButton clicked rec.recording=", rec.recording);
-    if(rec.recording) {
+    console.log("pauseButton clicked rec.recording=", rec.isRecording());
+    if(rec.isRecording()) {
         if(synced_recording) {
             sync_audio[0].pause();
         }
@@ -151,7 +162,7 @@ function pauseRecording() {
         if(synced_recording) {
             sync_audio[0].play();
         }
-        rec.record();
+        rec.startRecording();
         pause_button.html("pause");
     }
 }
@@ -172,27 +183,26 @@ function stop() {
     //reset button just in case the recording is stopped while paused
     pause_button[0].innerHTML = "pause";
     pause_button.unbind("click");
-    if(rec.recording) {
+    if(rec.isRecording()) {
         //tell the recorder to stop the recording
-        rec.stop(); //stop microphone access
+        rec.finishRecording();
         soundStream.getAudioTracks()[0].stop(); //?
         //$(clicked_item).css("background-color", 'blue');
         //create the wav blob and pass it on to createDownloadLink
-        rec.exportWAV(createDownloadLink);
+        //
+        // rec.exportWAV(createDownloadLink);
     }
 }
 
 function createDownloadLink(blob) {
-    var wav_url = URL.createObjectURL(blob); //Pretty nice API, creates a "URL" for any in-memory blob
-    let ogg_url;
+    var ogg_url = URL.createObjectURL(blob); //Pretty nice API, creates a "URL" for any in-memory blob
     var audio_element = document.createElement('audio');
     var list_element = document.createElement('li');
     var link_element = document.createElement('a');
     var upload_element = document.createElement("a");
-    ogg_url = URL.createObjectURL(encoder.finish());
     link_element.href = ogg_url;
     audio_element.controls = true; //See https://www.w3schools.com/tags/tag_audio.asp
-    audio_element.src = wav_url;
+    audio_element.src = ogg_url;
     link_element.download = new Date().toISOString() + '.ogg'; //Suggested filename for downloading
     $(link_element).addClass("material-icons");
     $(upload_element).addClass("material-icons");
@@ -242,10 +252,20 @@ function startSyncedRecording() {
         audio_context = new AudioContext();
         sync_audio[0].currentTime = 0;
         microPhone = audio_context.createMediaStreamSource(stream);
-        rec = new Recorder(microPhone, {
-            numChannels: 2 //Sweet stereo
+        rec = new WebAudioRecorder(microPhone, {
+            numChannels: 2, //Sweet stereo
+            workerDir: "/static/",
+            encoding: "ogg",
+            options: {
+                timeLimit: 420,
+                encodeAfterRecord: true
+            }
         });
-        rec.record();
+        rec.onComplete = function(rec, blob) {
+            console.log("Encoding complete");
+            createDownloadLink(blob);
+        };
+        rec.startRecording();
         sync_audio[0].play();
         console.log("Now recording");
     }).catch(function(err) {
