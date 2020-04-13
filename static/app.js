@@ -16,7 +16,8 @@ var recordings_list;
 var sync_audio;
 var play_playback_button;
 var clicked_item;
-
+var progress_indicator;
+var id;
 
 
 $('.record-controls').click(function(event){
@@ -26,7 +27,7 @@ $('.record-controls').click(function(event){
 $(".entry-container").click(function() {
     clicked_item = this;
     var req = new XMLHttpRequest();
-    let id = $(this).data("id");
+    id = $(this).data("id");
     let arrow = $(".show-song-arrow[data-id='"+ id + "']");
     record_button = $(".recordButton[data-id='"+ id +"']");
     synced_record_button = $(".syncedRecordButton[data-id='"+ id +"']");
@@ -35,6 +36,7 @@ $(".entry-container").click(function() {
     play_playback_button = $(".playbackPlayButton[data-id='"+ id+"']");
     sync_audio = $(".sync_audio[data-id='"+id +"']");
     recordings_list = $(".record-list[data-id='"+ id +"']");
+    progress_indicator = document.querySelector(".sync_progress[data-id='"+ id +"']");
 
     record_button.click(startRecording);
     synced_record_button.click(startSyncedRecording);
@@ -72,10 +74,10 @@ $(".entry-container").click(function() {
 });
 
 function progress(complete) {
-    $('.sync_progress').show();
-    document.querySelector('.sync_progress').MaterialProgress.setProgress(complete * 100);
-    if (complete == 1) {
-        $('.sync_progress').hide();
+    $(progress_indicator).show();
+    progress_indicator.MaterialProgress.setProgress(complete * 100);
+    if (complete > 0.99) {
+         $(progress_indicator).hide();
     }
 }
 
@@ -210,7 +212,7 @@ function createDownloadLink(blob) {
     upload_element.innerHTML = "cloud_done";
     $(upload_element).click(function () {
         if(window.confirm("Diese Aufnahme hochladen?")) {
-
+            uploadRecording(blob);
         }
     });
     list_element.appendChild(audio_element);
@@ -221,6 +223,26 @@ function createDownloadLink(blob) {
     //recordings_list.height(recordings_list.height() + 100);
     $(clicked_item).innerHeight($(clicked_item).innerHeight() + 100);
 }
+
+function uploadRecording(recording) {
+    let form = new FormData();
+    form.append('file', recording);
+    form.append('rehearsal_id', 1);
+    form.append("song_id", 1);
+    form.append('choir_section', 1);
+    let req = new XMLHttpRequest();
+    req.open('POST','/api/upload_recording/', true);
+    req.upload.addEventListener('progress', function (e) {
+        var complete = (e.loaded / e.total);
+        progress(complete);
+        }, false);
+    req.onreadystatechange = function(e) {
+        if (req.readyState === 4 && req.status === 200) {
+            console.log(e);
+        }
+     req.send(form);
+
+};
 
 function startSyncedRecording() {
     console.log("Trying to start synced recording");
