@@ -15,8 +15,9 @@ These requirements are necessary for chordlsync to run.
 - pandas
 
 You can install them by running:
+```{sh}
 pip install -r requirements.txt
-
+```
 
 ### Usage
 ```{sh}
