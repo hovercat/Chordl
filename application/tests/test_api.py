@@ -12,7 +12,7 @@ from redis import Redis
 
 from application import db
 from application.models import User, Choir, User_Choir, Rehearsal, Song, ChoirSection, User_ChoirSection, \
-    SynchronizationFile, Song_ChoirSection, SheetmusicFile
+    SynchronizationFile, Song_ChoirSection, SheetmusicFile, Rehearsal_Song
 
 
 class ApiTests(unittest.TestCase):
@@ -111,6 +111,10 @@ class ApiTests(unittest.TestCase):
         song_21guns = Song(name="21 Guns")
         song_21guns.choir_sections.append(
             Song_ChoirSection(song=song_21guns, choir_section=alle)
+        )
+
+        rehearsal.rehearsal_songs.append(
+            Rehearsal_Song(song=song_21guns, rehearsal=rehearsal)
         )
 
         sync_files = [

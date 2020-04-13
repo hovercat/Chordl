@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from application.sound_synchronization.sound_synchronization import get_error, synchronize, synchronize_multiple
+from sound_synchronization.sound_synchronization import get_error, synchronize, synchronize_multiple
 import soundfile as sf
 
 

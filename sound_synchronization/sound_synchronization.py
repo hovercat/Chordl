@@ -91,7 +91,7 @@ def synchronize(sync_signal, sync_samplerate, input_file, out, duration=10, erro
                 silence = np.zeros(((-1) * error_frames, 2))
                 data_sync = np.concatenate((silence, data_sync))
             else:
-                data_sync = data_sync[error_frames:, 2]
+                data_sync = data_sync[error_frames:, :]
         else:
             if error_frames < 0:
                 silence = np.zeros((-1) * error_frames)
