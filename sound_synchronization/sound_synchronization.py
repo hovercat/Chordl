@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 import scipy.signal as sps
 import sklearn.preprocessing as skp
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import soundfile as sf  # https://pysoundfile.readthedocs.io/en/latest/
 import pandas as pd
 
@@ -182,8 +182,8 @@ def _shift_signals(signal1, signal2, shift_width):
     return min_error_position, min_error
 
 
-def _plot_signals(signal1, signal2):
-    plt.plot(signal1)
-    plt.plot(signal2)
-
-    plt.show()
+#def _plot_signals(signal1, signal2):
+#    plt.plot(signal1)
+#    plt.plot(signal2)
+#
+#    plt.show()
