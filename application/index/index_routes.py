@@ -3,9 +3,9 @@ from flask import current_app as app
 from flask_login import current_user, login_user, login_required, logout_user
 from markupsafe import Markup
 
-from application import db
-from application.index.forms.authentication_forms import Login_Form, Register_Form
-from application.models import User
+from Chordl.application import db
+from Chordl.application.index.forms.authentication_forms import Login_Form, Register_Form
+from Chordl.application.models import User
 
 index_bp = Blueprint(
     'index_bp',
@@ -104,3 +104,8 @@ def register():
 @index_bp.route("/reset_password", methods=['GET', 'POST'])
 def reset_password():
     return Markup("Lorem Ipsum")
+
+
+@index_bp.route("/about")
+def imprint():
+    return render_template("imprint.jinja2")
