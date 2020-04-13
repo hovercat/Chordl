@@ -144,7 +144,7 @@ def _preprocess_signals(signal1, signal1_samplerate, signal2, signal2_samplerate
     p_sign1 = np.gradient(np.gradient(p_sign1, axis=0), axis=0)
     p_sign2 = np.gradient(np.gradient(p_sign2, axis=0), axis=0)
 
-    B, A = sps.butter(2, 0.01, output='ba')
+    B, A = sps.butter(4, 1/50, output='ba')
     p_sign1 = sps.filtfilt(B, A, np.abs(p_sign1), axis=0)
     p_sign2 = sps.filtfilt(B, A, np.abs(p_sign2), axis=0)
 

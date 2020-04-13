@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import os
+import sys
 
 import argparse
 
@@ -14,6 +16,18 @@ parser.add_argument('--clip-duration', type=int, help="Duration of synchronizati
 parser.add_argument('--resample-div', type=int, help="Influences the accuracy. The original sample rate is divided by this value for error detection; default: 10", default=10)
 
 args = parser.parse_args()
+
+if os.path.exists(args.output_dir):
+    print("Output folder {} already exists.".format(args.output_dir))
+    sys.exit(1)
+
+if not os.path.exists(args.input_dir):
+    print("Input folder {} does not exist.".format(args.input_dir))
+    sys.exit(1)
+
+if not os.path.exists(args.sync_file):
+    print("Master sync file {} does not exist.".format(args.sync_file))
+    sys.exit(1)
 
 error_stats = sound_synchronization.synchronize_multiple(
     sync=args.sync_file,
