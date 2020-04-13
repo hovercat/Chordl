@@ -60,3 +60,6 @@ optional arguments:
                         Influences the accuracy. The original sample rate is
                         divided by this value for error detection; default: 10
 ```
+
+Authors:
+Kanon G. + Ulrich A.
