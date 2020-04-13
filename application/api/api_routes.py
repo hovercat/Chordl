@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-from flask import Flask, render_template, Blueprint, request, abort
+from flask import Flask, render_template, Blueprint, request, abort, make_response
 from flask_login import login_required, current_user
 from markupsafe import Markup
 from werkzeug.utils import secure_filename
@@ -28,25 +28,25 @@ def get_syncfile(sync_id):
 @api_bp.route('/api/rehearsal_<int:rehearsal_id>/songs')
 def rehearsal_songs(rehearsal_id):
     if not current_user.is_authenticated:
-        return abort('403 - forbidden')
-    
-    r = Rehearsal.query.filter_by(rid = rehearsal_id).first()
+        return abort(403)
+
+    r = Rehearsal.query.filter_by(rid = rehearsal_id).first() #todo
 
 
 @login_required
 @api_bp.route('/api/upload_recording', methods=["POST"])
 def upload_recording():
     if request.method != "POST":
-        return abort('403 - forbidden')  # todo
+        return abort(403)  # todo
 
     rehearsal_id = request.form['rehearsal_id']
     song_id = request.form['song_id']
     choir_section = request.form['choir_section']
 
     if len(request.files) == 0:
-        return abort('No file provided')
+        return abort(400)
 
-    file = request.files[0]
+    file = request.files['file']
 
     file_name = secure_filename(file.filename)
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -55,21 +55,19 @@ def upload_recording():
 
         rehearsal_song = Rehearsal_Song.query.filter_by(rid=rehearsal_id, sid=song_id).first()
         if rehearsal_song is None:
-            return abort('404 - rehearsal song not found')
+            return abort(404)
 
         song_choirsection = Song_ChoirSection.query.filter_by(sid=song_id, csid=choir_section).first()
         if song_choirsection is None:
-            song_choirsection = Song_ChoirSection.query.filter_by(sid=song_id, fallback=True).first()
-            if song_choirsection is None:
-                return abort('404 - song choirsection not found')
+            #song_choirsection = Song_ChoirSection.query.filter_by(sid=song_id, fallback=True).first() # TODO Fallback
+            #if song_choirsection is None:
+            return abort(404)
 
-        rehearsal_song = Rehearsal_Song()
-
-        rec_file = RecordingFile(rehearsal_song=rehearsal_song, song_choirsection=song_choirsection, user=current_user, file_path=file_path)
+        rec_file = RecordingFile(rehearsal_song, song_choirsection, current_user.uid, file_path)
 
         db.session.add(rec_file)
         db.session.commit()
 
-    return True
+    return make_response("Aufnahme hochgeladen!", 200)
 
 # liste mit song_ids für probe
