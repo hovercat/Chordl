@@ -225,13 +225,16 @@ function createDownloadLink(blob) {
 }
 
 function uploadRecording(recording) {
-    let form = new FormData();
+    let form_data = document.querySelector(".song-upload-form[data-id='" + id + "']");
+    let form = new FormData(form_data);
     form.append('file', recording);
-    form.append('rehearsal_id', 1);
-    form.append("song_id", 1);
-    form.append('choir_section', 1);
+    //form.append('rehearsal_id', 1);
+    //form.append("song_id", 1);
+    //form.append('choir_section', 1);
+    //form.append('csrf_token', 1);
     let req = new XMLHttpRequest();
-    req.open('POST', '/api/upload_recording/', true);
+    req.open('POST', '/api/upload_recording', true);
+    //req.setRequestHeader("Content-type", "multipart/form-data")
     req.upload.addEventListener('progress', function (e) {
         var complete = (e.loaded / e.total);
         progress(complete);
@@ -239,6 +242,7 @@ function uploadRecording(recording) {
     req.onreadystatechange = function (e) {
         if (req.readyState === 4 && req.status === 200) {
             console.log(e);
+            window.confirm("Hochgeladen, danke! :)")
         }
     }
     req.send(form);
