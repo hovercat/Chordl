@@ -231,18 +231,19 @@ function uploadRecording(recording) {
     form.append("song_id", 1);
     form.append('choir_section', 1);
     let req = new XMLHttpRequest();
-    req.open('POST','/api/upload_recording/', true);
+    req.open('POST', '/api/upload_recording/', true);
     req.upload.addEventListener('progress', function (e) {
         var complete = (e.loaded / e.total);
         progress(complete);
-        }, false);
-    req.onreadystatechange = function(e) {
+    }, false);
+    req.onreadystatechange = function (e) {
         if (req.readyState === 4 && req.status === 200) {
             console.log(e);
         }
-     req.send(form);
+    }
+    req.send(form);
+}
 
-};
 
 function startSyncedRecording() {
     console.log("Trying to start synced recording");
