@@ -208,6 +208,8 @@ class Song_ChoirSection(db.Model):
     csid = db.Column(db.Integer,
                      db.ForeignKey(ChoirSection.csid),
                      primary_key=True)
+    fallback = db.Column(db.Boolean,
+                         default=False)
 
     song = db.relationship("Song", back_populates="choir_sections")
     choir_section = db.relationship("ChoirSection") # todo add reference on other side?
@@ -283,6 +285,11 @@ class SheetmusicFile(File, db.Model):
 class MusescoreFile(db.Model, File):
     __tablename__ = "MusescoreFile"
 
+    def __init__(self, song, choir_section, file_path, *args, **kwargs):
+        super().__init__(file_path, *args, **kwargs)
+        self.song = song
+        self.choir_section = choir_section
+
     musescore_id = db.Column(db.Integer,
                              primary_key=True)
     sid = db.Column(db.Integer,
@@ -352,6 +359,12 @@ class Rehearsal_Song(db.Model):
 
 class RecordingFile(db.Model, File):
     __tablename__ = "RecordingFile"
+
+    def __init__(self, rehearsal_song, song_choirsection, user, file_path, *args, **kwargs):
+        super().__init__(file_path, *args, **kwargs)
+        self.rehearsal_song = rehearsal_song
+        self.song_choirsection = song_choirsection
+        self.user = user
 
     rec_id = db.Column(db.Integer,
                        primary_key=True)
