@@ -20,7 +20,7 @@ login_manager.login_view = 'index_blueprint.login'
 from .models import User
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return User.query.filter_by(uid=int(user_id)).first()
 
 #celery = Celery()
 
