@@ -1,6 +1,6 @@
 # Chordl
 
-Chordl is a centralized submission portal for distribted choral singing, currently in development.
+Chordl is a centralized submission portal for distributed choral singing, currently in development.
 
 The chordlsync tool is already available in the folder [sound_synchronization](/sound_synchronization).
 
