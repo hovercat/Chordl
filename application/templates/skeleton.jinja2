@@ -37,8 +37,12 @@
       <div class="mdl-layout-spacer"></div>
       <!-- Navigation. We hide it in small screens. -->
       <nav class="mdl-navigation mdl-layout--large-screen-only">
+          {% if not current_user.is_authenticated %}
+            <a class="mdl-navigation__link" href="/login">Login</a>
+        {% else %}
+            <a class="mdl-navigation__link" href="/record">Aufnehmen</a>
+        {% endif %}
         <a class="mdl-navigation__link" href="/">Startseite</a>
-        <a class="mdl-navigation__link" href="/about">Impressum</a>
       </nav>
     </div>
   </header>
@@ -47,6 +51,7 @@
     <nav class="mdl-navigation">
       <a class="mdl-navigation__link" href="/previousRecordings">Feedback Aufnahmen</a>
       <a class="mdl-navigation__link" href="/logout">Logout</a>
+        <a class="mdl-navigation__link" href="/about">Impressum</a>
     </nav>
   </div>
   <main class="mdl-layout__content">
