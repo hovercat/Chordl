@@ -1,43 +1,40 @@
 # Chordl
 
-Chordl is a centralized submission portal for distribted choral singing, currently in development.
+Chordl is a centralized submission portal for distributed choral singing, currently in development.
 
-The sound_synchronization tool is already available in the folder [sound_synchronization](/sound_synchronization).
+The chordlsync tool is already available in the folder [sound_synchronization](/sound_synchronization).
 
-## Sound Synchronization
+## Sound Synchronization Chordlsync
 
 ### Install
 
-_First Option:_ Install from wheel-file:
-
-pip install chordl-sync.whl
-
-_Second Option:_ Download requirements on your own:
+These requirements are necessary for chordlsync to run.
 - numpy
 - scikit-learn
 - soundfile
 - pandas
 
-And then just use the script by issuing:
+You can install them by running:
+pip install -r requirements.txt
 
 
 ### Usage
 ```{sh}
-python -m chordl-sync PARAMETERS
+./chordlsync.py PARAMETERS
 OR
-./sync_audioaufnahme.py (if not installed as package)
+python chordlsync.py PARAMETERS
 ```
 
 Usage with default options:
 ```{sh}
-python -m chordl-sync -i input_directory -o output_directory
+python -m chordlsync -i input_directory -o output_directory
 ```
 
 
 All parameters:
 ```{sh}
-./sync_audioaufnahmen.py -h
-usage: sync_audioaufnahmen.py [-h] -s SYNC_FILE [-o OUTPUT_DIR] -i INPUT_DIR
+./__main__.py -h
+usage: __main__.py [-h] -s SYNC_FILE [-o OUTPUT_DIR] -i INPUT_DIR
                               [-f FORMAT] [-j JOBS]
                               [--clip-duration CLIP_DURATION]
                               [--resample-div RESAMPLE_DIV]
@@ -63,3 +60,6 @@ optional arguments:
                         Influences the accuracy. The original sample rate is
                         divided by this value for error detection; default: 10
 ```
+
+Authors:
+Kanon G. + Ulrich A.
