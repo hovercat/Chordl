@@ -13,3 +13,5 @@ record_blueprint = Blueprint(
 def welcome_page():
     return render_template('record.jinja2', title="Aufnahme", proben_datum="01.04.2020")
 
+
+
