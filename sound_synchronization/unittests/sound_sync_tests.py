@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from sound_synchronization.sound_synchronization import get_error, synchronize, synchronize_multiple
+from sound_synchronization.sound_synchronization import get_error, synchronize, synchronize_multiple, synchronize_video
 import soundfile as sf
 
 
@@ -57,6 +57,13 @@ class MyTestCase(unittest.TestCase):
             sync_signal = sync_file.read(10 * sync_file.samplerate)
             synchronize(sync_signal, sync_file.samplerate, "resources/real_example/in/05.ogg", "resources/real_example/05.flac", error_resample_div=10)
 
+
+    def test_synchronize_video(self):
+        out = "resources/enjoy/out/andi.mp4"
+        if os.path.exists(out):
+            os.remove(out)
+
+        synchronize_video("resources/enjoy/Master.ogg", "resources/enjoy/andi.mp4", out)
 
 if __name__ == '__main__':
     unittest.main()

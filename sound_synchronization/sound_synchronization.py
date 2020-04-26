@@ -1,12 +1,12 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
+
 import numpy as np
 import scipy.signal as sps
 import sklearn.preprocessing as skp
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import soundfile as sf  # https://pysoundfile.readthedocs.io/en/latest/
 import pandas as pd
-
 
 def synchronize_multiple(sync, in_dir, out_dir, out_format="flac", threads=22, duration=10, resample_rate=48000,
                          error_resample_div=10):
@@ -123,20 +123,22 @@ def get_error(sync_signal, sync_samplerate, input_signal, input_samplerate, resa
         error = error2
         error_pos = error_pos2 * error_resample_div * (-1)
 
-    print("Error: {}, Position: {}".format(
-        error,
-        error_pos / resample_rate
-    ))
+  #  print("Error: {}, Position: {}".format(
+  #      error,
+  #      error_pos / resample_rate
+  #  ))
 
     return error_pos, error_pos / resample_rate, error
 
 
 def _preprocess_signals(signal1, signal1_samplerate, signal2, signal2_samplerate, resample_rate,
                         error_resample_div):  # todo resampling of e.g 44.1khz
-    p_sign1 = sps.resample(signal1, int(signal1.shape[0] * (resample_rate / signal1_samplerate) / error_resample_div),
-                           axis=0)
-    p_sign2 = sps.resample(signal2, int(signal2.shape[0] * (resample_rate / signal2_samplerate) / error_resample_div),
-                           axis=0)
+   # p_sign1 = sps.resample(signal1, int(signal1.shape[0] * (resample_rate / signal1_samplerate) / error_resample_div),
+   #                        axis=0)
+    #p_sign2 = sps.resample(signal2, int(signal2.shape[0] * (resample_rate / signal2_samplerate) / error_resample_div),
+    #                       axis=0)
+    p_sign1 = signal1
+    p_sign2 = signal2
 
     if p_sign1.shape[0] != p_sign2.shape[0]:
         p_sign2 = np.concatenate((p_sign2, np.zeros((p_sign1.shape[0] - p_sign2.shape[0], 2))))
@@ -150,6 +152,13 @@ def _preprocess_signals(signal1, signal1_samplerate, signal2, signal2_samplerate
 
     p_sign1 = skp.maxabs_scale(p_sign1)
     p_sign2 = skp.maxabs_scale(p_sign2)
+
+
+
+    p_sign1 = sps.resample(p_sign1, int(signal1.shape[0] * (resample_rate / signal1_samplerate) / error_resample_div),
+                           axis=0)
+    p_sign2 = sps.resample(p_sign2, int(signal2.shape[0] * (resample_rate / signal2_samplerate) / error_resample_div),
+                           axis=0)
 
     p_sign1[p_sign1 < 0] = 0
     p_sign2[p_sign2 < 0] = 0
@@ -182,8 +191,8 @@ def _shift_signals(signal1, signal2, shift_width):
     return min_error_position, min_error
 
 
-#def _plot_signals(signal1, signal2):
-#    plt.plot(signal1)
-#    plt.plot(signal2)
-#
-#    plt.show()
+def _plot_signals(signal1, signal2):
+    plt.plot(signal1)
+    plt.plot(signal2)
+
+    plt.show()

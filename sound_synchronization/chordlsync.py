@@ -8,14 +8,16 @@ import sound_synchronization
 
 parser = argparse.ArgumentParser(description="Synchronisation für TU Chor Files")
 parser.add_argument('-s', '--sync-file', type=str, help="Synchronization file with beeps in the beginning", required=True)
-parser.add_argument('-o', '--output-dir', type=str, help="Output directory; default=./out", default="out")
+parser.add_argument('-o', '--output-dir', type=str, help="Output directory; default=./out", default="out2")
 parser.add_argument('-i', '--input-dir', type=str, help="Input directory", required=True)
 parser.add_argument('-f', '--format', type=str, help="Output format; supported are flac and wav; default: flac", default="flac")
 parser.add_argument('-j', '--jobs', type=int, help="Number of threads to use; default: 2", default=2)
-parser.add_argument('--clip-duration', type=int, help="Duration of synchronization to take from every input file; default: 10s", default=10)
-parser.add_argument('--resample-div', type=int, help="Influences the accuracy. The original sample rate is divided by this value for error detection; default: 10", default=10)
+parser.add_argument('--clip-duration', type=int, help="Duration of synchronization to take from every input file; default: 10s", default=60)
+parser.add_argument('--resample-div', type=int, help="Influences the accuracy. The original sample rate is divided by this value for error detection; default: 10", default=20)
 
-args = parser.parse_args()
+
+args = parser.parse_args(["-s", "unittests/resources/enjoy/Master.ogg", "-i", "unittests/resources/enjoy2", "-j", "22"])
+#args = parser.parse_args()
 
 if os.path.exists(args.output_dir):
     print("Output folder {} already exists.".format(args.output_dir))
