@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-
+import logging
 import argparse
 
 import sound_synchronization as ss
@@ -13,6 +13,8 @@ class Chordlsync:
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
+
     parser = argparse.ArgumentParser(description="Synchronisation für TU Chor Files")
     parser.add_argument('-s', '--sync-file', type=str, help="Synchronization file with beeps in the beginning",
                         required=True)
@@ -22,8 +24,8 @@ def main():
                         default="flac")
     parser.add_argument('-j', '--jobs', type=int, help="Number of threads to use; default: 2", default=2)
 
-    # args = parser.parse_args(["-s", "unittests/resources/Master.ogg", "-i", "unittests/resources/sound_files", "-j", "2"])
-    args = parser.parse_args()
+    args = parser.parse_args(["-s", "unittests/resources/Master.ogg", "-i", "unittests/resources/sound_files", "-j", "2"])
+    #args = parser.parse_args()
 
     if os.path.exists(args.output_dir):
         print("Output folder {} already exists.".format(args.output_dir))
